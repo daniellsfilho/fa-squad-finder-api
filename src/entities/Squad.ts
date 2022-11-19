@@ -20,6 +20,9 @@ export class Squad {
     @Column({type: 'text'})
     minRank: string
 
+    @Column({type: 'int'})
+    maxMembers: number
+
     @OneToMany(() => SquadUser, user => user.squad)
     members: SquadUser[]
 
