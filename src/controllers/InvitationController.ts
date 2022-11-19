@@ -43,4 +43,15 @@ export class InvitationController {
             res.status(500).json("Internal Server Error")
         }
     }
+
+    async getInvitations(req: Request, res: Response) {
+
+        try {
+            
+            res.status(200).json(await invitationRepository.find())
+        } catch (error) {
+            console.log(error)
+            res.status(500).json("Internal Server Error")
+        }
+    }
 }

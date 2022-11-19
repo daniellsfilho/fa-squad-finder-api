@@ -15,11 +15,18 @@ export class UserController {
             return res.status(201).json(newUser)
         } catch (error) {
             console.log(error)
-            return res.status(500).json({message: 'Internal Server Error'})
+            return res.status(500).json({message: "Internal Server Error"})
         }
     }
 
     async getUsers(req: Request, res: Response){
-        
+
+        try {
+            return res.status(200).json(await userRepository.find())
+            
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: "Internal Server Error"})
+        }
     }
 }

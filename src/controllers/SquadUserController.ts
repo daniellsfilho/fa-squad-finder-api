@@ -65,4 +65,15 @@ export class SquadUserController {
             return res.status(500).json({message: "Internal Server Error"})
         }
     }
+
+    async getSquadsUsers(req: Request, res: Response) {
+
+        try {
+            
+            return res.status(200).json(await squadUserRepository.find())
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: "Internal Server Error"})
+        }
+    }
 }
