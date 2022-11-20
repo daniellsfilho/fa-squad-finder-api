@@ -8,6 +8,7 @@ const routes = Router()
 
 // USER ROUTES
 routes.get('/users', new UserController().getUsers)
+routes.get('/user/email', new UserController().getUserByEmail)
 routes.post('/user', new UserController().createUser)
 
 // SQUAD ROUTES

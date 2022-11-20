@@ -24,8 +24,26 @@ export class SquadController {
 
         try {
             
-            return res.status(200).json(await squadRepository.find())
+            return res.status(200).json(await squadRepository.find({
+                relations: {
+                    members: true
+                 }
+            }))
         } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: "Internal Server Error"})
+        }
+    }
+
+    async getSquadsByUserId(req: Request, res: Response) {
+
+        const { userId } = req.params
+
+        try {
+            
+            
+        } catch (error) {
+
             console.log(error)
             return res.status(500).json({message: "Internal Server Error"})
         }

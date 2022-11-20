@@ -3,7 +3,7 @@ import { userRepository } from "../repositories/userRepository";
 
 export class UserController {
 
-    async createUser(req: Request, res: Response){
+    async createUser(req: Request, res: Response) {
 
         const user = req.body
 
@@ -19,7 +19,7 @@ export class UserController {
         }
     }
 
-    async getUsers(req: Request, res: Response){
+    async getUsers(req: Request, res: Response) {
 
         try {
             return res.status(200).json(await userRepository.find())
@@ -29,4 +29,20 @@ export class UserController {
             return res.status(500).json({message: "Internal Server Error"})
         }
     }
+
+    async getUserByEmail(req: Request, res: Response) {
+
+        const { email } = req.body
+
+        try {
+            
+            const user = await userRepository.findUserByEmail(email)
+
+            return res.status(200).json(user)
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: "Internal Server Error"})
+        }
+    }  
 }
