@@ -8,6 +8,13 @@ export class UserController {
         const user = req.body
 
         try {
+
+            const userCheck = await userRepository.findUserByEmail(user.email)
+
+            if(userCheck.email){
+                return res.status(200).json({message: "Usuário já existe!"})
+            }
+
             const newUser = userRepository.create(user)
 
             await userRepository.save(newUser)
