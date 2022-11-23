@@ -1,17 +1,34 @@
 import { Request, Response } from "express";
 import { squadRepository } from "../repositories/squadRepository";
+import { squadUserRepository } from "../repositories/squadUserRepository";
+import { userRepository } from "../repositories/userRepository";
 
 export class SquadController {
     
     async createSquad(req: Request, res: Response) {
 
-        const squad = req.body
+        let {userEmail, name, description, minAge, minRank, maxMembers} = req.body
 
         try {
+
+            if(maxMembers > 99){
+                maxMembers = 99
+            }
+
+            if(minAge > 99){
+                minAge = 99
+            }
             
-            const newSquad = squadRepository.create(squad)
+            const newSquad = squadRepository.create({name, description, minAge, minRank, maxMembers})
 
             await squadRepository.save(newSquad)
+
+            const user = await userRepository.findUserByEmail(userEmail)
+
+            if (user) {
+                const newSquadUser = await squadUserRepository.create({squad: newSquad, user: user})
+                await squadUserRepository.save(newSquadUser)
+            }
 
             return res.status(201).json(newSquad)
         } catch (error) {

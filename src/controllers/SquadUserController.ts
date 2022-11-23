@@ -70,7 +70,12 @@ export class SquadUserController {
 
         try {
             
-            return res.status(200).json(await squadUserRepository.find())
+            return res.status(200).json(await squadUserRepository.find({
+                relations: {
+                    user: true,
+                    squad: true
+                }
+            }))
         } catch (error) {
             console.log(error)
             return res.status(500).json({message: "Internal Server Error"})
