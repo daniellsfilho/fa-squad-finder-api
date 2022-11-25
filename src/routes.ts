@@ -10,6 +10,7 @@ const routes = Router()
 routes.get('/users', new UserController().getUsers)
 routes.get('/user/email', new UserController().getUserByEmail)
 routes.post('/user', new UserController().createUser)
+routes.put('/user/update', new UserController().updateUser)
 
 // SQUAD ROUTES
 routes.get('/squads', new SquadController().getSquads)

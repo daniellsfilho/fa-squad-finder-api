@@ -52,4 +52,29 @@ export class UserController {
             return res.status(500).json({message: "Internal Server Error"})
         }
     }  
+
+    async updateUser(req: Request, res: Response){
+
+        const userUpdate = req.body
+        try {
+
+            const user = await userRepository.findUserByEmail(userUpdate.email)
+
+            if(!user.userName){
+                return res.status(400).json({message: "Parece que o usuário não existe, tente novamente com outro usuário"})
+            }
+
+            user.userName = userUpdate.userName
+            user.age = userUpdate.age
+            user.photo = userUpdate.photo
+
+            await userRepository.save(user)
+
+            return res.status(200).json(user)
+
+        } catch(error){
+            console.log(error)
+            return res.status(500).json({message: "Internal Server Error"})
+        }
+    }
 }
