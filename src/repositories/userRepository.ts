@@ -15,5 +15,24 @@ export const userRepository = AppDataSource.getRepository(User).extend({
         })
 
         return selectedUser
+    },
+
+    async findUserById(id: number){
+
+        const users = await this.find({
+            relations: {
+                squads: true
+            }
+        })
+
+        let selectedUser: User = new User()
+
+        users.forEach((user: User) => {
+            if(user.id == id){
+                selectedUser = user
+            }
+        })
+
+        return selectedUser
     }
 })

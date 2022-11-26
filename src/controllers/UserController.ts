@@ -26,6 +26,30 @@ export class UserController {
         }
     }
 
+    async getUsersByName(req: Request, res: Response) {
+
+        const {name} = req.params
+        try {
+            
+            const lowerCaseName = name.toLowerCase()
+
+            const selectedUsers: any[] = []
+            const users = await userRepository.find()
+            
+            users.forEach(user => {
+                const userName = user.userName.toLowerCase()
+                if(userName.includes(lowerCaseName)){
+                    selectedUsers.push(user)
+                }
+            })
+
+            return res.status(200).json(selectedUsers)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: "Internal Server Error"})
+        }
+    }
+
     async getUsers(req: Request, res: Response) {
 
         try {
@@ -39,11 +63,15 @@ export class UserController {
 
     async getUserByEmail(req: Request, res: Response) {
 
-        const { email } = req.body
+        const { email } = req.params
 
         try {
             
             const user = await userRepository.findUserByEmail(email)
+
+            if(!user.id){
+                return res.status(400).json({message: "Usuário não existe"})
+            }
 
             return res.status(200).json(user)
 

@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { Squad } from "../entities/Squad";
+import { SquadUser } from "../entities/SquadUser";
 import { squadRepository } from "../repositories/squadRepository";
 import { squadUserRepository } from "../repositories/squadUserRepository";
 import { userRepository } from "../repositories/userRepository";
@@ -60,9 +62,48 @@ export class SquadController {
 
         try {
             
+            const id = parseInt(userId)
+
+            const user = await userRepository.findUserById(id)
+
+            const userSquadsUsers = user.squads
+
+            const userSquads: Squad[] = []
+
+            const squads = await squadRepository.find({
+                relations: {
+                    members: true
+                }
+            })
+
+            squads.forEach((squad: Squad) => {
+                const squadMembers = squad.members
+                squadMembers.forEach((member: SquadUser) => {
+                    userSquadsUsers.forEach((squadUser: SquadUser) => {
+                        if(member.id == squadUser.id){
+                            userSquads.push(squad)
+                        }
+                    })
+                }) 
+            })
+
+            return res.status(200).json(userSquads)
             
         } catch (error) {
 
+            console.log(error)
+            return res.status(500).json({message: "Internal Server Error"})
+        }
+    }
+
+    async getSquadsByName(req: Request, res: Response){
+
+        const { name } = req.params
+
+        try {
+            const squads = await squadRepository.findSquadsByName(name)
+            return res.status(200).json(squads)
+        } catch (error) {
             console.log(error)
             return res.status(500).json({message: "Internal Server Error"})
         }

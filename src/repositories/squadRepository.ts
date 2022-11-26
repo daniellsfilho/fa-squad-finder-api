@@ -18,5 +18,22 @@ export const squadRepository = AppDataSource.getRepository(Squad).extend({
         })
 
         return selectedSquad
+    },
+
+    async findSquadsByName(name: string){
+        const squads: Squad[] = await this.find()
+
+        const selectedSquads: Squad[] = []
+
+        const lowerCaseName = name.toLowerCase()
+
+        squads.forEach((squad: Squad) => {
+            const squadName = squad.name.toLowerCase()
+            if(squadName.includes(lowerCaseName)){
+                selectedSquads.push(squad)
+            }
+        })
+
+        return selectedSquads
     }
 })
