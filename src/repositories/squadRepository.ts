@@ -21,7 +21,11 @@ export const squadRepository = AppDataSource.getRepository(Squad).extend({
     },
 
     async findSquadsByName(name: string){
-        const squads: Squad[] = await this.find()
+        const squads: Squad[] = await this.find({
+            relations: {
+                members: true
+            }
+        })
 
         const selectedSquads: Squad[] = []
 
