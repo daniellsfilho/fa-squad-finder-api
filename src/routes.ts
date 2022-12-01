@@ -26,6 +26,9 @@ routes.post('/squad-user/:squadId/:userId', new SquadUserController().createSqua
 
 // INVITATION ROUTES
 routes.get('/invitations', new InvitationController().getInvitations)
+routes.get('/invitations/:userId', new InvitationController().getInvitationsByUserId)
+routes.delete('/invitation/accept/:id', new InvitationController().acceptInvitation)
+routes.delete('/invitation/decline/:id', new InvitationController().declineInvitation)
 routes.post('/invitation/:squadId/:userId', new InvitationController().createInvitation)
 
 

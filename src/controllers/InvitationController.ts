@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import { Invitation } from "../entities/Invitation";
 import { invitationRepository } from "../repositories/invitationRepository";
 import { squadRepository } from "../repositories/squadRepository";
+import { squadUserRepository } from "../repositories/squadUserRepository";
 import { userRepository } from "../repositories/userRepository";
 
 export class InvitationController {
@@ -36,11 +38,11 @@ export class InvitationController {
 
             await invitationRepository.save(newInvitation)
 
-            res.status(201).json(newInvitation)
+            return res.status(201).json(newInvitation)
 
         } catch (error) {
             console.log(error)
-            res.status(500).json("Internal Server Error")
+            return res.status(500).json("Internal Server Error")
         }
     }
 
@@ -48,10 +50,96 @@ export class InvitationController {
 
         try {
             
-            res.status(200).json(await invitationRepository.find())
+            return res.status(200).json(await invitationRepository.find())
         } catch (error) {
             console.log(error)
-            res.status(500).json("Internal Server Error")
+            return res.status(500).json("Internal Server Error")
+        }
+    }
+
+    async getInvitationsByUserId(req: Request, res:Response) {
+
+        const { userId } = req.params
+
+        try {
+            const allInvitations = await invitationRepository.find({
+                relations:{
+                    squad: true,
+                    user: true
+                }
+            })
+
+            const userInvitations: Invitation[] = []
+
+            allInvitations.forEach((invitation: Invitation) => {
+                if(invitation.user.id == parseInt(userId)){
+                    userInvitations.push(invitation)
+                }
+            })
+
+            return res.status(200).json(userInvitations)
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json("Internal Server Error")
+        }
+    }
+
+    async acceptInvitation(req:Request, res: Response){
+
+        const { id } = req.params
+
+        try {
+            
+            const inviId = parseInt(id)
+
+            const invitation = await invitationRepository.findInviByIdWithRelations(inviId)
+
+            if(!invitation.title){
+                return res.status(400).json({message: "Convite não existe"})
+            }
+
+            const user = invitation.user
+            const squad = invitation.squad
+
+            const newSquadUser = squadUserRepository.create({
+                user,
+                squad
+            })
+
+            await squadUserRepository.save(newSquadUser)
+
+            await invitationRepository.delete(invitation)
+
+            return res.status(200).json(newSquadUser)
+
+        } catch (error) {
+            
+            console.log(error)
+            return res.status(500).json("Internal Server Error")
+        }
+    }
+
+    async declineInvitation(req: Request, res: Response){
+
+        const { id } = req.params
+
+        try {
+            
+            const invitation = await invitationRepository.findOneBy({
+                id: parseInt(id)
+            })
+
+            if(!invitation){
+                return res.status(400).json({message: "Convite não existe"})
+            }
+
+            await invitationRepository.delete(invitation)
+            return res.status(200).json({message: "Convite deletado"})
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json("Internal Server Error")
         }
     }
 }
