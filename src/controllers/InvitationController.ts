@@ -102,6 +102,12 @@ export class InvitationController {
             const user = invitation.user
             const squad = invitation.squad
 
+            const squadVerification = await squadRepository.findOneByIdWithRelations(squad.id)
+
+            if(squadVerification.members.length >= squadVerification.maxMembers){
+                return res.status(400).json({message: "Squad cheio!"})
+            }
+
             const newSquadUser = squadUserRepository.create({
                 user,
                 squad
