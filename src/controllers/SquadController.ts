@@ -156,4 +156,33 @@ export class SquadController {
             return res.status(500).json({message: "Internal Server Error"})
         }
     }
+
+    async updateSquad(req: Request, res: Response) {
+
+        const squadUpdate = req.body
+        const { squadId } = req.params
+
+        try {
+            
+            const squad = await squadRepository.findOneByIdWithRelations(parseInt(squadId))
+
+            if(!squad.id){
+                return res.status(404).json({message: "Squad não encontrado"})
+            }
+
+            squad.name = squadUpdate.name
+            squad.description = squadUpdate.description
+            squad.minAge = squadUpdate.minAge
+            squad.minRank = squadUpdate.minRank
+            squad.maxMembers = squadUpdate.maxMembers
+
+            await squadRepository.save(squad)
+
+            return res.status(200).json(squad)
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: "Internal Server Error"})
+        }
+    }
 }
