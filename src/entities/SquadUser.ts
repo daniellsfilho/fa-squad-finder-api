@@ -7,11 +7,18 @@ export class SquadUser {
     @PrimaryGeneratedColumn()
     id: number
 
-    @ManyToOne(() => Squad, squad => squad.members)
+    @Column({type: 'boolean'})
+    leader: boolean
+
+    @ManyToOne(() => Squad, squad => squad.members, {
+        onDelete: 'CASCADE'
+    })
     @JoinColumn({name: 'squad_id'})
     squad: Squad
 
-    @ManyToOne(() => User, user => user.squads)
+    @ManyToOne(() => User, user => user.squads, {
+        onDelete: 'CASCADE'
+    })
     @JoinColumn({name: 'user_id'})
     user: User
 }

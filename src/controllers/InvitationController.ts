@@ -110,7 +110,8 @@ export class InvitationController {
 
             const newSquadUser = squadUserRepository.create({
                 user,
-                squad
+                squad,
+                leader: false
             })
 
             await squadUserRepository.save(newSquadUser)

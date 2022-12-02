@@ -31,7 +31,7 @@ export class SquadController {
 
             await squadRepository.save(newSquad)
 
-            const newSquadUser = squadUserRepository.create({squad: newSquad, user: user})
+            const newSquadUser = squadUserRepository.create({squad: newSquad, user: user, leader: true})
             await squadUserRepository.save(newSquadUser)
 
             return res.status(201).json(newSquad)
@@ -103,6 +103,54 @@ export class SquadController {
         try {
             const squads = await squadRepository.findSquadsByName(name)
             return res.status(200).json(squads)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: "Internal Server Error"})
+        }
+    }
+
+    async deleteSquad(req: Request, res: Response){
+
+        const { userId, squadId } = req.params
+
+        try {
+            
+            const squad = await squadRepository.findOneByIdWithRelations(parseInt(squadId))
+            const user = await userRepository.findUserById(parseInt(userId))
+
+            if(!squad.id || !user.id){
+                return res.status(404).json({message: "Usuário ou Squad não existem"})
+            }
+
+            const squadMembers = squad.members
+            const userSquads = user.squads
+
+            let selectedMember = new SquadUser()
+
+            squadMembers.forEach(member => {
+                userSquads.forEach(userSquad => {
+                    if(member.id == userSquad.id){
+                        selectedMember = member
+                    }
+                })
+            })
+
+            if(!selectedMember.id){
+                return res.status(404).json({message: "Membro não existe"})
+            }
+
+            if(selectedMember.leader == false){
+                return res.status(400).json({message: "Você não tem permissão para essa ação"})
+            } else {
+                squadMembers.forEach(async (member) => {
+                    await squadUserRepository.delete(member)
+                })
+                await squadRepository.delete(squad)
+            }
+
+            
+            return res.status(200).json({message: "Squad deletado"})
+
         } catch (error) {
             console.log(error)
             return res.status(500).json({message: "Internal Server Error"})

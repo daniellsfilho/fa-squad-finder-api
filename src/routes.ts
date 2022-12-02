@@ -19,6 +19,7 @@ routes.get('/squads', new SquadController().getSquads)
 routes.get('/squads/user/:userId', new SquadController().getSquadsByUserId)
 routes.get('/squads/:name', new SquadController().getSquadsByName)
 routes.post('/squad', new SquadController().createSquad)
+//routes.delete('/squad/:userId/:squadId', new SquadController().deleteSquad)
 
 // SQUADUSER ROUTES
 routes.get('/squads-users', new SquadUserController().getSquadsUsers)
